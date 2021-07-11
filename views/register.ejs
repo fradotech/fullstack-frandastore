@@ -1,5 +1,10 @@
 <h5>Daftar Reseller Franda Store</h5>
 <br>
+<% if (message) {%> 
+    <div class="alert <%= messageClass %>" role="alert">
+        <%= message %> 
+    </div>
+<% } %> 
 <form method="post" action="/register">
     <div class="form-group">
         <label>Nama</label>

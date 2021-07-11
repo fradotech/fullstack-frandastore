@@ -10,6 +10,10 @@ const User = require('./model/user')
 const app = express()
 const port = process.env.PORT || 3000
 
+let userNow
+let tokenNow
+let token
+
 app.set('view engine', 'ejs')
 app.use(expressLayouts)
 app.use(express.static('public'))
@@ -25,21 +29,6 @@ app.use(
     })
 )
 
-const auth = (req, res, next) => {
-    try {
-        const token = req.headers.authorization.split(' ')[1]
-        const decode = jwt.verify(token, 'franda20012021.01082000.20052003')
-
-        req.user = decode
-        next()
-    }
-    catch(err) {
-        res.json({
-            message: err
-        })
-    }
-}
-
 app.get('/', (req, res) => {
     res.render('index', {
         layout: 'layouts/main-layout',
@@ -51,6 +40,8 @@ app.get('/login', (req, res) => {
     res.render('login', {
         layout: 'layouts/main-layout',
         title: 'Franda Store',
+        message: '',
+        messageClass: 'alert-success'
     })
 })
 
@@ -58,23 +49,29 @@ app.post('/login', (req, res) => {
     let email = req.body.email
     let password = req.body.password
 
-    User.findOne({email: email})
+    const user = User.findOne({email: email})
     .then(user => {
         if(user){
             if(password === user.password){
-                let token = jwt.sign({name: user.name}, 'franda20012021.01082000.20052003', {expiresIn: '24h'})
-                res.json({
-                    message: 'Login success',
-                    token: token
-                })
+                token = jwt.sign({name: user.name}, 'franda20012021.01082000.20052003', {expiresIn: '24h'})
+                res.cookie('AuthToken', token)
+                userNow = user
+
+                res.redirect('/reseller')
             }else{
-                res.json({
-                    message: 'Lupa Password? Coba lagi! Atau chat 085895004066 untuk tanya password',
+                res.render('login', {
+                    layout: 'layouts/main-layout',
+                    title: 'Franda Store',
+                    message: 'Password salah! Lupa password? Coba lagi! Atau chat 085895004066 untuk tanya password',
+                    messageClass: 'alert-danger'
                 })
             }
         }else{
-            res.json({
-                message: 'Email salah. Coba lagi!',
+            res.render('login', {
+                    layout: 'layouts/main-layout',
+                    title: 'Franda Store',
+                    message: 'Email salah! Coba lagi!',
+                    messageClass: 'alert-danger'
             })
         }
     })
@@ -84,15 +81,12 @@ app.get('/register', (req, res) => {
     res.render('register', {
         layout: 'layouts/main-layout',
         title: 'Franda Store',
+        message: '',
+        messageClass: 'alert-success'
     })
 })
 
 app.post('/register', (req, res) => {
-    const emailSudahDaftar = User.findOne({email: req.body.email})
-    if(emailSudahDaftar) return res.status(400).json({
-        message: 'Email sudah terdaftar, silakan login'
-    })
-
     let user = new User ({
         name: req.body.name,
         phone: req.body.phone,
@@ -106,6 +100,8 @@ app.post('/register', (req, res) => {
         res.render('login', {
             layout: 'layouts/main-layout',
             title: 'Franda Store',
+            message: 'Pendaftaran berhasil! Silakan login!',
+            messageClass: 'alert-success'
         })
     })
     .catch(err => {
@@ -129,20 +125,52 @@ app.get('/ml-menu', (req, res) => {
     })
 })
 
-app.get('/reseller/ff-menu', auth, (req, res) => {
+//Reseller Area
+
+app.use((req, res, next) => {
+    tokenNow = req.cookies['AuthToken']
+    if(tokenNow = token){
+        next()
+    }else{
+        res.render('login', {
+            layout: 'layouts/main-layout',
+            title: 'Franda Store',
+            message: 'Anda perlu login reseller dahulu!',
+            messageClass: 'alert-danger'
+        })
+    }
+})
+
+app.get('/reseller', (req, res) => {
+    res.render('reseller', {
+        layout: 'layouts/reseller-layout',
+        title: 'Franda Store',
+        userNow
+    })
+})
+
+app.get('/profile', (req, res) => {
+    res.render('profile', {
+        layout: 'layouts/reseller-layout',
+        title: 'Franda Store',
+        userNow
+    })
+})
+
+app.get('/reseller/ff-menu', (req, res) => {
     res.render('reseller-ff-menu', {
-        layout: 'layouts/main-layout',
+        layout: 'layouts/reseller-layout',
         title: 'Franda Store',
+        userNow
     })
 })
 
-app.get('/reseller/ml-menu', auth, (req, res) => {
+app.get('/reseller/ml-menu', (req, res) => {
     res.render('reseller-ml-menu', {
-        layout: 'layouts/main-layout',
+        layout: 'layouts/reseller-layout',
         title: 'Franda Store',
+        userNow
     })
 })
 
-app.listen(port, () => {
-    console.log(`Point Count App | Listening at http://127.0.0.1:${port}`)
-})
+app.listen(port)
