@@ -1,26 +1,23 @@
+<h5>Daftar Reseller Franda Store</h5>
 <br>
-<div class="container" style="padding: 5%; background-color:  white;">
-    <h2>SUDAH BUAT TURNAMEN?</h2>
-    <a href="/ff-login" class="btn btn-primary">Login</a>
-    <br><br>
-    <hr>
-    <P>Atau</P>
-    <hr>
-    <h4>Buat Turnamen Free Fire Baru</h4>
-    <form method="post" action="/ff-register">
-        <div class="form-group">
-            <label>Nama Turnamen</label>
-            <input type="name" class="form-control" id="namaTur" name="namaTur" placeholder="Nama Turnamen" required>
-        </div>
-        <div class="form-group">
-            <label>Email</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
-        </div>
-        <div class="form-group">
-            <label>Password Baru</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Password baru" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Buat</button>
-    </form>
-</div>
-<br>
+<form method="post" action="/ff-form">
+    <div class="form-group">
+        <label>Nama</label>
+        <input type="name" class="form-control" id="name" name="name" placeholder="Nama" required>
+    </div>
+    <div class="form-group">
+        <label>Nomor HP</label>
+        <input type="phone" class="form-control" id="phone" name="phone" placeholder="Nomor HP" required>
+    </div>
+    <div class="form-group">
+        <label>Email</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+    </div>
+    <div class="form-group">
+        <label>Password</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+    </div>
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary" style="width: 290px;">Login</button>
+    </div>
+</form>
