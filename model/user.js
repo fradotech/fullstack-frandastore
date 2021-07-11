@@ -1,25 +1,20 @@
 const mongoose = require('mongoose')
 
 const User = mongoose.model('User', {
-    nama: {
+    name: {
         type: String,
-        require: true,
     },
     email: {
         type: String,
-        require: true,
     },
-    noHp: {
+    phone: {
         type: String,
-        require: true,
     },
     password: {
         type: String,
-        require: true,
     },
-    faPay: {
+    fPay: {
         type: Number,
-        require: true,
     },
 })
 
