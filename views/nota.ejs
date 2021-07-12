@@ -1,0 +1,34 @@
+<% if (message) {%> 
+    <div class="alert <%= messageClass %>" role="alert">
+        <%= message %> 
+    </div>
+<% } %> 
+<div class="d-flex justify-content-center">
+    <form method="POST" action="/nota">
+        <div class="card" style="width: 300px; height: 320; background-color: white;">
+            <div class="card-body">
+                <p><strong>Detail Transaksi</strong></p>
+                <div class="form-group">
+                    <label for="id">Player ID</label>
+                    <p type="id" class="form-control" id="id" name="id"><%= trans.id %></p>
+                </div>
+                <div class="form-group">
+                  <label for="id">Diamonds</label>
+                  <p type="text" class="form-control" id="id" name="dm"><%= trans.dm %></p>
+                </div>
+                <div class="form-group">
+                    <label for="id">Harga</label>
+                    <p type="text" class="form-control" id="id" name="rp"><%= trans.rp %></p>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="text-center" style="width: 300px; height: 320;">
+            <div>
+                <P>Diamonds akan masuk dalam 2 - 10 menit. Belum masuk lebih dari 15 menit? bisa chat admin</P>
+                <p>atau salah ID? Bisa chat admin</p>
+            </div>
+            <a href="https://wa.me/+6285895004066" style="width: 299px;" class="btn btn-primary"><strong>Chat Admin</strong></a>
+        </div>
+    </form>
+</div>
