@@ -53,7 +53,7 @@ app.post('/login', (req, res) => {
     .then(getUser => {
         if(getUser){
             if(password === getUser.password){
-                token = jwt.sign({name: getUser.name}, 'franda20012021.01082000.20052003', {expiresIn: '24h'})
+                token = jwt.sign({name: getUser.name}, 'franda20012021.01082000.20052003', {expiresIn: '60'})
                 res.cookie('AuthToken', token)
                 user = getUser
 
@@ -130,7 +130,16 @@ app.get('/ml-menu', (req, res) => {
 app.use((req, res, next) => {
     tokenNow = req.cookies['AuthToken']
     if(tokenNow = token){
-        next()
+        if(user){
+            next()
+        }else{
+            res.render('login', {
+                layout: 'layouts/main-layout',
+                title: 'Franda Store',
+                message: 'Anda perlu login reseller dahulu!',
+                messageClass: 'alert-danger'
+            })
+        }
     }else{
         res.render('login', {
             layout: 'layouts/main-layout',
@@ -174,7 +183,7 @@ app.get('/reseller/ml-menu', (req, res) => {
 })
 
 app.get('/logout', (req, res) => {
-    tokenNow = ''
+    user = null
     res.redirect('/')
 })
 
