@@ -10,7 +10,7 @@ const User = require('./model/user')
 const app = express()
 const port = process.env.PORT || 3000
 
-let userNow
+let user
 let tokenNow
 let token
 
@@ -49,13 +49,13 @@ app.post('/login', (req, res) => {
     let email = req.body.email
     let password = req.body.password
 
-    const user = User.findOne({email: email})
-    .then(user => {
-        if(user){
-            if(password === user.password){
-                token = jwt.sign({name: user.name}, 'franda20012021.01082000.20052003', {expiresIn: '24h'})
+    const getUser = User.findOne({email: email})
+    .then(getUser => {
+        if(getUser){
+            if(password === getUser.password){
+                token = jwt.sign({name: getUser.name}, 'franda20012021.01082000.20052003', {expiresIn: '24h'})
                 res.cookie('AuthToken', token)
-                userNow = user
+                user = getUser
 
                 res.redirect('/reseller')
             }else{
@@ -145,7 +145,7 @@ app.get('/reseller', (req, res) => {
     res.render('reseller', {
         layout: 'layouts/reseller-layout',
         title: 'Franda Store',
-        userNow
+        user
     })
 })
 
@@ -153,7 +153,7 @@ app.get('/profile', (req, res) => {
     res.render('profile', {
         layout: 'layouts/reseller-layout',
         title: 'Franda Store',
-        userNow
+        user
     })
 })
 
@@ -161,7 +161,7 @@ app.get('/reseller/ff-menu', (req, res) => {
     res.render('reseller-ff-menu', {
         layout: 'layouts/reseller-layout',
         title: 'Franda Store',
-        userNow
+        user
     })
 })
 
@@ -169,8 +169,13 @@ app.get('/reseller/ml-menu', (req, res) => {
     res.render('reseller-ml-menu', {
         layout: 'layouts/reseller-layout',
         title: 'Franda Store',
-        userNow
+        user
     })
+})
+
+app.get('/logout', (req, res) => {
+    tokenNow = ''
+    res.redirect('/')
 })
 
 app.listen(port)
