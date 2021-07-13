@@ -315,16 +315,17 @@ app.post('/nota', (req, res) => {
                             rp: req.body.rp
                         }
 
-                        // `
-                        // Reseller: ${getUser.name}
-                        // Saldo   : ${getUser.fPay}
-                        // -------------------------
-                        // Diamonds: ${trans.dm}
-                        // Harga   : ${trans.rp}
+                        const order = `
+                        
+                        Reseller: ${getUser.name}
+                        Saldo   : ${getUser.fPay}
+                        -------------------------
+                        Diamonds: ${trans.dm}
+                        Harga   : ${trans.rp}
 
-                        // ID      : ${trans.id}
+                        ID      : ${trans.id}
 
-                        // `
+                        `
 
                         res.render('nota', {
                             layout: 'layouts/reseller-layout',
