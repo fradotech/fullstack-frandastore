@@ -15,18 +15,18 @@ const tokenTele = '1732495901:AAFzAs_v_JGTqef9IS0bAtqe78cOuXu6_KQ'
 
 const bot = new TelegramBot(tokenTele, {polling: true});
 
-let user
-let tokenNow
-let token
-let newfPay
-let transStatus
+let i 
+i += 1
+
+let authTokens = {}
+let newfPay = {}
+let transStatus = {}
 
 app.set('view engine', 'ejs')
 app.use(expressLayouts)
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }))
-
-app.use(cookieParser('secret'))
+app.use(cookieParser())
 app.use(
     session({
         cookie: { maxAge: 6000 },
@@ -60,11 +60,13 @@ app.post('/login', (req, res) => {
     .then(getUser => {
         if(getUser){
             if(password === getUser.password){
-                token = jwt.sign({name: getUser.name}, 'franda20012021.01082000.20052003', {expiresIn: '24h'})
-                res.cookie('AuthToken', token)
-                user = getUser
+                token = jwt.sign({email: getUser.email}, 'franda20012021.01082000.20052003', {expiresIn: '24h'})
 
+                authTokens[token] = getUser
+                res.cookie('token', token)
+                
                 res.redirect('/reseller')
+
             }else{
                 res.render('login', {
                     layout: 'layouts/main-layout',
@@ -169,25 +171,12 @@ app.post('/transaction', (req, res) => {
 //Reseller Area
 
 app.use((req, res, next) => {
-    tokenNow = req.cookies['AuthToken']
-    if(tokenNow = token){
-        if(user){
-            next()
-        }else{
-            res.render('login', {
-                layout: 'layouts/main-layout',
-                title: 'Franda Store',
-                message: 'Anda perlu login reseller dahulu!',
-                messageClass: 'alert-danger'
-            })
-        }
+    const token = req.cookies['token']
+    req.user = authTokens[token]
+    if (req.user) {
+        next()
     }else{
-        res.render('login', {
-            layout: 'layouts/main-layout',
-            title: 'Franda Store',
-            message: 'Anda perlu login reseller dahulu!',
-            messageClass: 'alert-danger'
-        })
+        res.redirect('/login')
     }
 })
 
@@ -195,7 +184,7 @@ app.get('/reseller', (req, res) => {
     res.render('reseller', {
         layout: 'layouts/reseller-layout',
         title: 'Franda Store',
-        user
+        user: req.user
     })
 })
 
@@ -203,7 +192,7 @@ app.get('/reseller/ff-menu', (req, res) => {
     res.render('reseller-ff-menu', {
         layout: 'layouts/reseller-layout',
         title: 'Franda Store',
-        user
+        user: req.user
     })
 })
 
@@ -211,12 +200,12 @@ app.get('/reseller/ml-menu', (req, res) => {
     res.render('reseller-ml-menu', {
         layout: 'layouts/reseller-layout',
         title: 'Franda Store',
-        user
+        user: req.user
     })
 })
 
 app.get('/profile', (req, res) => {
-    const email = user.email
+    const email = req.user.email
 
     const getUser = User.findOne({ email: email })
     .then(getUser => {
@@ -229,7 +218,7 @@ app.get('/profile', (req, res) => {
 })
 
 app.post('/res-transaction', (req, res) => {
-    transStatus = true
+    transStatus[i] = true
 
     const id = req.body.id
     const dm = req.body.gridRadios
@@ -270,7 +259,7 @@ app.post('/res-transaction', (req, res) => {
     res.render('res-transaction', {
         layout: 'layouts/reseller-layout',
         title: 'Franda Store',
-        user,
+        user: req.user,
         trans
     })
 })
@@ -283,7 +272,7 @@ app.post('/nota', (req, res) => {
     }
 
     if (transStatus) {
-        const email = user.email
+        const email = req.user.email
         const fPay = req.body.rp
 
         const getUser = User.findOne({ email: email })
@@ -301,14 +290,14 @@ app.post('/nota', (req, res) => {
                     })
 
                 }else{
-                    transStatus = false
-                    newfPay = getUser.fPay - fPay * 1
+                    transStatus[i] = false
+                    newfPay[i] = getUser.fPay - fPay * 1
                 
                     User.updateOne(
                         { email },
                         {
                             $set: {
-                                fPay: newfPay
+                                fPay: newfPay[i]
                             }
                         }
                     ).then((result) => {
@@ -362,7 +351,7 @@ app.post('/nota', (req, res) => {
             title: 'Franda Store',
             message: 'Transaksi Berhasil!',
             messageClass: 'alert-success',
-            user,
+            user: req.user,
             trans
         })
     }
@@ -372,17 +361,23 @@ app.get('/isi-saldo', (req, res) => {
     res.render('isi-saldo', {
         layout: 'layouts/reseller-layout',
         title: 'Franda Store',
-        user
+        user: req.user
     })
 })
 
 app.get('/logout', (req, res) => {
-    user = null
+    cookie = req.cookies
+    for (let prop in cookie) {
+        if (!cookie.hasOwnProperty(prop)) {
+            continue
+        }
+        res.cookie(prop, '', {expires: new Date(0)})
+    }
     res.redirect('/')
 })
 
 app.use((req, res, next) => {
-    if(user.email == 'frandatech@gmail.com' && user._id == '60ec0639d271804953db5efe'){
+    if(req.user.email == 'frandatech@gmail.com' && req.user._id == '60ec0639d271804953db5efe'){
         next()
     }else{
         res.redirect('/logout')
@@ -393,7 +388,7 @@ app.get('/cuma-Dinda-Cantik-yangbisamasuk', (req, res) => {
     res.render('cuma-Dinda-Cantik-yangbisamasuk', {
         layout: 'layouts/reseller-layout',
         title: 'Franda Store',
-        user,
+        user: req.user,
         message: '',
         messageClass: ''
     })
@@ -419,7 +414,7 @@ app.post('/cuma-Dinda-Cantik-yangbisamasuk', (req, res) => {
                 res.render('cuma-Dinda-Cantik-yangbisamasuk', {
                     layout: 'layouts/reseller-layout',
                     title: 'Franda Store',
-                    user,
+                    user: req.user,
                     message: `Berhasil tambah saldo. ${getUser.fPay} + ${fPay} = ${newfPay}`,
                     messageClass: 'alert-success'
                 })
@@ -429,7 +424,7 @@ app.post('/cuma-Dinda-Cantik-yangbisamasuk', (req, res) => {
             res.render('cuma-Dinda-Cantik-yangbisamasuk', {
                     layout: 'layouts/reseller-layout',
                     title: 'Franda Store',
-                    user,
+                    user: req.user,
                     message: 'Email e salah sayangg :3',
                     messageClass: 'alert-danger'
             })
