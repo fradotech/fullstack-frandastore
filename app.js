@@ -268,12 +268,6 @@ app.post('/res-transaction', (req, res) => {
 })
 
 app.post('/nota', (req, res) => {
-    const trans = {
-        id: req.body.id,
-        dm: req.body.rp,
-        rp: req.body.dm
-    }
-
     if (transStatus[token]) {
         const email = req.user.email
         const fPay = req.body.rp
@@ -294,7 +288,6 @@ app.post('/nota', (req, res) => {
 
                 }else{
                     transStatus[token] = false
-                    console.log(transStatus)
                     newfPay[token] = getUser.fPay - fPay * 1
                 
                     User.updateOne(
@@ -340,16 +333,27 @@ app.post('/nota', (req, res) => {
                 }
 
             }else{
+                const trans = {
+                    id: req.body.id,
+                    dm: req.body.dm,
+                    rp: req.body.rp
+                }
                 res.render('nota', {
                         layout: 'layouts/reseller-layout',
                         title: 'Franda Store',
                         message: 'Transaksi Gagal!',
                         messageClass: 'alert-danger',
                         user: getUser,
+                        trans
                 })
             }
         })
     }else{
+        const trans = {
+            id: req.body.id,
+            dm: req.body.dm,
+            rp: req.body.rp
+        }
         res.render('nota', {
             layout: 'layouts/reseller-layout',
             title: 'Franda Store',
