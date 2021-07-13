@@ -3,10 +3,10 @@ const expressLayouts = require('express-ejs-layouts')
 const session = require('express-session')
 const cookieParser = require('cookie-parser')
 const jwt = require('jsonwebtoken')
+const { get } = require('mongoose')
 
 require('./utils/db')
 const User = require('./model/user')
-const { get } = require('mongoose')
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -15,6 +15,7 @@ let user
 let tokenNow
 let token
 let newfPay
+let transStatus
 
 app.set('view engine', 'ejs')
 app.use(expressLayouts)
@@ -224,6 +225,8 @@ app.get('/profile', (req, res) => {
 })
 
 app.post('/res-transaction', (req, res) => {
+    transStatus = true
+
     const id = req.body.id
     const dm = req.body.gridRadios
     let rp
@@ -269,48 +272,91 @@ app.post('/res-transaction', (req, res) => {
 })
 
 app.post('/nota', (req, res) => {
-    const email = user.email
-    const fPay = req.body.rp
+    const trans = {
+        id: req.body.id,
+        dm: req.body.rp,
+        rp: req.body.dm
+    }
 
-    const getUser = User.findOne({ email: email })
-    .then(getUser => {
-        if(getUser){
-            newfPay = getUser.fPay - fPay * 1
-            
-            User.updateOne(
-                { email },
-                {
-                    $set: {
-                        fPay: newfPay
-                    }
+    if (transStatus) {
+        const email = user.email
+        const fPay = req.body.rp
+
+        const getUser = User.findOne({ email: email })
+        .then(getUser => {
+            if(getUser){
+                if(getUser.fPay < fPay){
+
+                    res.render('nota', {
+                        layout: 'layouts/reseller-layout',
+                        title: 'Franda Store',
+                        message: 'Transaksi Gagal! Saldo tidak cukup, silakan isi saldo!',
+                        messageClass: 'alert-danger',
+                        user: getUser,
+                        trans
+                    })
+
+                }else{
+                    transStatus = false
+                    newfPay = getUser.fPay - fPay * 1
+                
+                    User.updateOne(
+                        { email },
+                        {
+                            $set: {
+                                fPay: newfPay
+                            }
+                        }
+                    ).then((result) => {
+
+                        const trans = {
+                            id: req.body.id,
+                            dm: req.body.dm,
+                            rp: req.body.rp
+                        }
+
+                        // `
+                        // Reseller: ${getUser.name}
+                        // Saldo   : ${getUser.fPay}
+                        // -------------------------
+                        // Diamonds: ${trans.dm}
+                        // Harga   : ${trans.rp}
+
+                        // ID      : ${trans.id}
+
+                        // `
+
+                        res.render('nota', {
+                            layout: 'layouts/reseller-layout',
+                            title: 'Franda Store',
+                            message: 'Transaksi Berhasil!',
+                            messageClass: 'alert-success',
+                            user: getUser,
+                            trans
+                        })
+                    })
                 }
-            ).then((result) => {
-                const trans = {
-                    id: req.body.id,
-                    dm: req.body.rp,
-                    rp: req.body.dm
-                }
-            
+
+            }else{
                 res.render('nota', {
-                    layout: 'layouts/reseller-layout',
-                    title: 'Franda Store',
-                    message: 'Transaksi Berhasil!',
-                    messageClass: 'alert-success',
-                    user: getUser,
-                    trans
+                        layout: 'layouts/reseller-layout',
+                        title: 'Franda Store',
+                        message: 'Transaksi Gagal!',
+                        messageClass: 'alert-danger',
+                        user: getUser,
                 })
-            })
-
-        }else{
-            res.render('cuma-Dinda-Cantik-yangbisamasuk', {
-                    layout: 'layouts/reseller-layout',
-                    title: 'Franda Store',
-                    user,
-                    message: 'Transaksi Gagal! Coba hubungi admin 085895004066',
-                    messageClass: 'alert-danger'
-            })
-        }
-    })
+            }
+        })
+    }else{
+        res.render('nota', {
+            layout: 'layouts/reseller-layout',
+            title: 'Franda Store',
+            message: 'Transaksi Berhasil!',
+            messageClass: 'alert-success',
+            user,
+            trans
+        })
+    }
 })
 
 app.get('/isi-saldo', (req, res) => {
@@ -330,7 +376,7 @@ app.use((req, res, next) => {
     if(user.email == 'frandatech@gmail.com' && user._id == '60ec0639d271804953db5efe'){
         next()
     }else{
-        res.redirect('/')
+        res.redirect('/logout')
     }
 })
 
@@ -365,7 +411,7 @@ app.post('/cuma-Dinda-Cantik-yangbisamasuk', (req, res) => {
                     layout: 'layouts/reseller-layout',
                     title: 'Franda Store',
                     user,
-                    message: `Yeyy!! berhasil tambah saldo. ${getUser.fPay} + ${fPay} = ${newfPay}`,
+                    message: `Berhasil tambah saldo. ${getUser.fPay} + ${fPay} = ${newfPay}`,
                     messageClass: 'alert-success'
                 })
             })
