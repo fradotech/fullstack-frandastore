@@ -15,9 +15,6 @@ const tokenTele = '1732495901:AAFzAs_v_JGTqef9IS0bAtqe78cOuXu6_KQ'
 
 const bot = new TelegramBot(tokenTele, {polling: true});
 
-let i 
-i += 1
-
 let authTokens = {}
 let newfPay = {}
 let transStatus = {}
@@ -176,7 +173,12 @@ app.use((req, res, next) => {
     if (req.user) {
         next()
     }else{
-        res.redirect('/login')
+        res.render('login', {
+            layout: 'layouts/main-layout',
+            title: 'Franda Store',
+            message: 'Anda perlu login dahulu!',
+            messageClass: 'alert-danger'
+        })
     }
 })
 
@@ -218,7 +220,8 @@ app.get('/profile', (req, res) => {
 })
 
 app.post('/res-transaction', (req, res) => {
-    transStatus[i] = true
+    transStatus[token] = true
+    console.log(transStatus)
 
     const id = req.body.id
     const dm = req.body.gridRadios
@@ -271,7 +274,7 @@ app.post('/nota', (req, res) => {
         rp: req.body.dm
     }
 
-    if (transStatus) {
+    if (transStatus[token]) {
         const email = req.user.email
         const fPay = req.body.rp
 
@@ -290,14 +293,15 @@ app.post('/nota', (req, res) => {
                     })
 
                 }else{
-                    transStatus[i] = false
-                    newfPay[i] = getUser.fPay - fPay * 1
+                    transStatus[token] = false
+                    console.log(transStatus)
+                    newfPay[token] = getUser.fPay - fPay * 1
                 
                     User.updateOne(
                         { email },
                         {
                             $set: {
-                                fPay: newfPay[i]
+                                fPay: newfPay[token]
                             }
                         }
                     ).then((result) => {
