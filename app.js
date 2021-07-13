@@ -4,12 +4,16 @@ const session = require('express-session')
 const cookieParser = require('cookie-parser')
 const jwt = require('jsonwebtoken')
 const { get } = require('mongoose')
+const TelegramBot = require('node-telegram-bot-api')
 
 require('./utils/db')
 const User = require('./model/user')
 
 const app = express()
 const port = process.env.PORT || 3000
+const tokenTele = '1732495901:AAFzAs_v_JGTqef9IS0bAtqe78cOuXu6_KQ'
+
+const bot = new TelegramBot(tokenTele, {polling: true});
 
 let user
 let tokenNow
@@ -315,17 +319,21 @@ app.post('/nota', (req, res) => {
                             rp: req.body.rp
                         }
 
-                        const order = `
-                        
-                        Reseller: ${getUser.name}
-                        Saldo   : ${getUser.fPay}
+                        const order = `Reseller          ${getUser.name}
+                        email: ${getUser.email}
+                        Saldo: ${getUser.fPay}
                         -------------------------
-                        Diamonds: ${trans.dm}
-                        Harga   : ${trans.rp}
+                        ${trans.dm} DM
+                        Rp ${trans.rp}
 
-                        ID      : ${trans.id}
+                        ID: ${trans.id}
 
                         `
+                        const fradoId = '895958227'
+                        bot.sendMessage(fradoId, order)
+
+                        const dindaId = '1805691857'
+                        bot.sendMessage(dindaId, order)
 
                         res.render('nota', {
                             layout: 'layouts/reseller-layout',
