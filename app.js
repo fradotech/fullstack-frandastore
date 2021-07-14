@@ -16,6 +16,7 @@ const date = new Date()
 
 const bot = new TelegramBot(tokenTele, { polling: true });
 
+let disc
 let newfPay = {}
 let trans = {}
 let transDate = {}
@@ -147,16 +148,23 @@ app.get('/reseller-preview/ff-menu', (req, res) => {
     })
 })
 
-app.get('/reselle-previewr/ml-menu', (req, res) => {
-    res.render('ml-menu', {
-        layout: 'layouts/main-layout',
-        title: 'Franda Store',
-    })
+app.get('/reseller-preview/ml-menu', (req, res) => {
+    if(disc == true){
+        res.render('reseller-preview-ml-menu-disc', {
+            layout: 'layouts/main-layout',
+            title: 'Franda Store',
+        })
+    }else{
+        res.render('reseller-preview-ml-menu', {
+            layout: 'layouts/main-layout',
+            title: 'Franda Store',
+        })
+    }
 })
 
 app.post('/transaction', (req, res) => {
     const trans = {
-        id: req.body.id,
+        id: req.body.id + (' (' + req.body.serverId + ')'),
         topup: req.body.gridRadios
     }
 
@@ -178,7 +186,7 @@ app.use( async (req, res, next) => {
         res.render('login', {
             layout: 'layouts/main-layout',
             title: 'Franda Store',
-            message: 'Anda perlu login dahulu! Bug auto log out? chat admin saja!',
+            message: 'Anda perlu login dahulu!',
             messageClass: 'alert-danger'
         })
     }
@@ -201,11 +209,19 @@ app.get('/reseller-ff-menu', (req, res) => {
 })
 
 app.get('/reseller-ml-menu', (req, res) => {
-    res.render('reseller-ml-menu', {
-        layout: 'layouts/reseller-layout',
-        title: 'Franda Store',
-        user: req.user
-    })
+    if(disc == true){
+        res.render('reseller-ml-menu-disc', {
+            layout: 'layouts/reseller-layout',
+            title: 'Franda Store',
+            user: req.user
+        })
+    }else{
+        res.render('reseller-ml-menu', {
+            layout: 'layouts/reseller-layout',
+            title: 'Franda Store',
+            user: req.user
+        })
+    }
 })
 
 app.get('/profile', async (req, res) => {
@@ -233,37 +249,106 @@ app.post('/res-transaction', async (req, res) => {
 
     transDate[token] = ((key * (s * 1) + (ms * 1)) + '-' + ((h * 1) + '-' + (m * 1)) + '-' + d + mn + y)
 
-    const id = await req.body.id
+    let id = await req.body.id
     const dm = await req.body.gridRadios
     let rp
 
-    if (dm == 20) {
-        rp = 3800
-    } if (dm == 50) {
-        rp = 8100
-    } if (dm == 70) {
-        rp = 9700
-    } if (dm == 100) {
-        rp = 14900
-    } if (dm == 140) {
-        rp = 19500
-    } if (dm == 210) {
-        rp = 29900
-    } if (dm == 355) {
-        rp = 48900
-    } if (dm == 720) {
-        rp = 96900
-    } if (dm == 1440) {
-        rp = 194900
-    } if (dm == 2000) {
-        rp = 284900
-    } if (dm == 'mingguan') {
-        rp = 29900
-    } if (dm == 'bulanan') {
-        rp = 117900
+    function hargaFF(dm) {
+        if (dm == 20) {
+            return rp = 3800
+        } if (dm == 50) {
+            return rp = 8100
+        } if (dm == 70) {
+            return rp = 9700
+        } if (dm == 100) {
+            return rp = 14900
+        } if (dm == 140) {
+            return rp = 19500
+        } if (dm == 210) {
+            return rp = 29900
+        } if (dm == 355) {
+            return rp = 48900
+        } if (dm == 720) {
+            return rp = 96900
+        } if (dm == 1440) {
+            return rp = 194900
+        } if (dm == 2000) {
+            return rp = 284900
+        } if (dm == 'mingguan') {
+            return rp = 29900
+        } if (dm == 'bulanan') {
+            return rp = 117900
+        }
     }
 
+    function hargaML(dm) {
+        const newId = id + (' (' + req.body.serverId + ')')
+        id = newId
+
+        if (dm == 50) {
+            return rp = 14900
+        } if (dm == 85) {
+            return rp = 22900
+        } if (dm == 100) {
+            return rp = 29100
+        } if (dm == 172) {
+            return rp = 41900
+        } if (dm == 282) {
+            return rp = 71100
+        } if (dm == 366) {
+            return rp = 92600
+        } if (dm == 568) {
+            return rp = 137800
+        } if (dm == 708) {
+            return rp = 194800
+        } if (dm == 875) {
+            return rp = 229800
+        } if (dm == 966) {
+            return rp = 259800
+        } if (dm == 1446) {
+            return rp = 349600
+        } if (dm == 'starlight') {
+            return rp = 135900
+        }
+    }
+
+    function hargaMLdisc(dm) {
+        const newId = id + (' (' + req.body.serverId + ')')
+        id = newId
+
+        if (dm == 50) {
+            return rp = 14600
+        } if (dm == 85) {
+            return rp = 20900
+        } if (dm == 100) {
+            return rp = 28700
+        } if (dm == 172) {
+            return rp = 40200
+        } if (dm == 282) {
+            return rp = 69700
+        } if (dm == 366) {
+            return rp = 89800
+        } if (dm == 568) {
+            return rp = 134700
+        } if (dm == 708) {
+            return rp = 178800
+        } if (dm == 875) {
+            return rp = 211900
+        } if (dm == 966) {
+            return rp = 241400
+        } if (dm == 1446) {
+            return rp = 327600
+        } if (dm == 'starlight') {
+            return rp = 129900
+        }
+    }
+
+    if(req.body.game == 'Free Fire') hargaFF(dm)
+    if(req.body.game == 'Mobile Legends') hargaML(dm)
+    if(req.body.game == 'Mobile Legends Diskon') hargaMLdisc(dm)
+
     trans[transDate[token]] = {
+        game: req.body.game,
         id,
         dm,
         rp,
@@ -284,6 +369,7 @@ app.post('/nota', async (req, res) => {
     if (trans[transDate[token]].date == req.body.date && transStatus[token]) {
 
         const trans = {
+            game: req.body.game,
             id: req.body.id,
             dm: req.body.dm,
             rp: req.body.rp,
@@ -322,7 +408,8 @@ app.post('/nota', async (req, res) => {
                             const order = `Reseller              ${getUser.name}
                             ${getUser.email}
                             ${getUser.fPay}
-                            -------------------------
+                            ----------------------------------------------------
+                            ${trans.game}
                             ${trans.date}
                             ${trans.dm} DM
                             Rp ${trans.rp}
@@ -351,6 +438,7 @@ app.post('/nota', async (req, res) => {
 
                 } else {
                     const trans = {
+                        game: req.body.game,
                         id: req.body.id,
                         dm: req.body.dm,
                         rp: req.body.rp,
@@ -369,6 +457,7 @@ app.post('/nota', async (req, res) => {
             })
     } else {
         const trans = {
+            game: req.body.game,
             id: req.body.id,
             dm: req.body.dm,
             rp: req.body.rp,
@@ -419,7 +508,8 @@ app.get('/cuma-Dinda-Cantik-yangbisamasuk', (req, res) => {
         title: 'Franda Store',
         user: req.user,
         message: '',
-        messageClass: ''
+        messageClass: '',
+        disc
     })
 })
 
@@ -427,6 +517,9 @@ app.post('/cuma-Dinda-Cantik-yangbisamasuk', async (req, res) => {
     const email = req.body.email
     const fPay = req.body.fPay
     const minfPay = req.body.minfPay
+    disc = req.body.disc
+    console.log(disc)
+    console.log(req.body.disc)
 
     const getUser = await User.findOne({ email: email })
         .then(getUser => {
@@ -446,7 +539,8 @@ app.post('/cuma-Dinda-Cantik-yangbisamasuk', async (req, res) => {
                         title: 'Franda Store',
                         user: req.user,
                         message: `Berhasil tambah saldo. ${getUser.fPay} + ${fPay} - ${minfPay} = ${newfPay}`,
-                        messageClass: 'alert-success'
+                        messageClass: 'alert-success',
+                        disc
                     })
                 })
 
@@ -456,7 +550,8 @@ app.post('/cuma-Dinda-Cantik-yangbisamasuk', async (req, res) => {
                     title: 'Franda Store',
                     user: req.user,
                     message: 'Email e salah sayangg :3',
-                    messageClass: 'alert-danger'
+                    messageClass: 'alert-danger',
+                    disc
                 })
             }
         })

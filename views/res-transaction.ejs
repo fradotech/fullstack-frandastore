@@ -2,14 +2,15 @@
     <form method="POST" action="/nota">
         <div class="card" style="width: 400px; height: 320; background-color: white;">
             <div class="card-body">
-                <p><strong>Review Transaksi</strong></p>
+                <p><strong>Konfirmasi Transaksi <%= trans.game %></strong></p>
+                <input type="hidden" class="form-control" id="id" name="game" value="<%= trans.game %>" required>
                 <div class="form-group">
                     <label for="id">Player ID (Teliti lagi)</label>
                     <p type="id" class="form-control" id="id" name="id"><%= trans.id %></p>
                     <input type="hidden" class="form-control" id="id" name="id" value="<%= trans.id %>"></input>
                 </div>
                 <div class="form-group">
-                    <label for="id">Diamonds Free Fire</label>
+                    <label for="id">Diamonds</label>
                     <p type="text" class="form-control" id="id" name="dm"><%= trans.dm %></p>
                     <input type="hidden" class="form-control" id="id" name="dm" value="<%= trans.dm %>"></input>
                 </div>
