@@ -179,7 +179,7 @@ app.use( async (req, res, next) => {
         res.render('login', {
             layout: 'layouts/main-layout',
             title: 'Franda Store',
-            message: 'Anda perlu login dahulu!',
+            message: 'Anda perlu login dahulu! Bug top up auto log out? chat admin saja!',
             messageClass: 'alert-danger'
         })
     }
@@ -222,7 +222,7 @@ app.get('/profile', async (req, res) => {
         })
 })
 
-app.post('/res-transaction', (req, res) => {
+app.post('/res-transaction', async (req, res) => {
     const ms = date.getMilliseconds()
     const s = date.getSeconds()
     const m = date.getMinutes()
@@ -234,8 +234,8 @@ app.post('/res-transaction', (req, res) => {
 
     transDate[token] = ((key * (s * 1) + (ms * 1)) + '-' + ((h * 1) + '-' + (m * 1)) + '-' + d + mn + y)
 
-    const id = req.body.id
-    const dm = req.body.gridRadios
+    const id = await req.body.id
+    const dm = await req.body.gridRadios
     let rp
 
     if (dm == 20) {
@@ -291,8 +291,8 @@ app.post('/nota', async (req, res) => {
             date: req.body.date
         }
 
-        const email = req.user.email
-        const fPay = req.body.rp
+        const email = await req.user.email
+        const fPay = await req.body.rp
 
         const getUser = await User.findOne({ email: email })
             .then(getUser => {
