@@ -16,7 +16,6 @@ const date = new Date()
 
 const bot = new TelegramBot(tokenTele, { polling: true });
 
-let authTokens = {}
 let newfPay = {}
 let trans = {}
 let transDate = {}
@@ -62,8 +61,8 @@ app.post('/login', (req, res) => {
                 if (password === getUser.password) {
                     token = jwt.sign({ email: getUser.email }, 'franda20012021.01082000.20052003', { expiresIn: '24h' })
 
-                    authTokens[token] = getUser
                     res.cookie('token', token)
+                    res.cookie('user', getUser)
 
                     res.redirect('/reseller')
 
@@ -172,14 +171,14 @@ app.post('/transaction', (req, res) => {
 
 app.use( async (req, res, next) => {
     const token = await req.cookies['token']
-    req.user = await authTokens[token]
+    req.user = await req.cookies['user']
     if (req.user) {
         next()
     } else {
         res.render('login', {
             layout: 'layouts/main-layout',
             title: 'Franda Store',
-            message: 'Anda perlu login dahulu! Bug top up auto log out? chat admin saja!',
+            message: 'Anda perlu login dahulu! Bug auto log out? chat admin saja!',
             messageClass: 'alert-danger'
         })
     }
@@ -193,7 +192,7 @@ app.get('/reseller', (req, res) => {
     })
 })
 
-app.get('/reseller/ff-menu', (req, res) => {
+app.get('/reseller-ff-menu', (req, res) => {
     res.render('reseller-ff-menu', {
         layout: 'layouts/reseller-layout',
         title: 'Franda Store',
@@ -201,7 +200,7 @@ app.get('/reseller/ff-menu', (req, res) => {
     })
 })
 
-app.get('/reseller/ml-menu', (req, res) => {
+app.get('/reseller-ml-menu', (req, res) => {
     res.render('reseller-ml-menu', {
         layout: 'layouts/reseller-layout',
         title: 'Franda Store',
