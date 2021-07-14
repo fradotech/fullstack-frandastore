@@ -282,7 +282,7 @@ app.post('/res-transaction', (req, res) => {
 })
 
 app.post('/nota', (req, res) => {
-    if (trans[transDate[token]].date == req.body.date && transStatus) {
+    if (trans[transDate[token]].date == req.body.date && transStatus[token]) {
 
         const trans = {
             id: req.body.id,
@@ -320,7 +320,7 @@ app.post('/nota', (req, res) => {
                             }
                         ).then((result) => {
 
-                            const order = `Reseller          ${getUser.name}
+                            const order = `Reseller             ${getUser.name}
                             ${getUser.email}
                             ${getUser.fPay}
                             -------------------------
