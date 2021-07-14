@@ -12,11 +12,14 @@ const User = require('./model/user')
 const app = express()
 const port = process.env.PORT || 3000
 const tokenTele = '1732495901:AAFzAs_v_JGTqef9IS0bAtqe78cOuXu6_KQ'
+const date = new Date()
 
-const bot = new TelegramBot(tokenTele, {polling: true});
+const bot = new TelegramBot(tokenTele, { polling: true });
 
 let authTokens = {}
 let newfPay = {}
+let trans = {}
+let transDate = {}
 let transStatus = {}
 
 app.set('view engine', 'ejs')
@@ -53,34 +56,34 @@ app.post('/login', (req, res) => {
     let email = req.body.email
     let password = req.body.password
 
-    const getUser = User.findOne({email: email})
-    .then(getUser => {
-        if(getUser){
-            if(password === getUser.password){
-                token = jwt.sign({email: getUser.email}, 'franda20012021.01082000.20052003', {expiresIn: '24h'})
+    const getUser = User.findOne({ email: email })
+        .then(getUser => {
+            if (getUser) {
+                if (password === getUser.password) {
+                    token = jwt.sign({ email: getUser.email }, 'franda20012021.01082000.20052003', { expiresIn: '24h' })
 
-                authTokens[token] = getUser
-                res.cookie('token', token)
-                
-                res.redirect('/reseller')
+                    authTokens[token] = getUser
+                    res.cookie('token', token)
 
-            }else{
+                    res.redirect('/reseller')
+
+                } else {
+                    res.render('login', {
+                        layout: 'layouts/main-layout',
+                        title: 'Franda Store',
+                        message: 'Password salah! Lupa password? Coba lagi! Atau chat 085895004066 untuk tanya password',
+                        messageClass: 'alert-danger'
+                    })
+                }
+            } else {
                 res.render('login', {
-                    layout: 'layouts/main-layout',
-                    title: 'Franda Store',
-                    message: 'Password salah! Lupa password? Coba lagi! Atau chat 085895004066 untuk tanya password',
-                    messageClass: 'alert-danger'
-                })
-            }
-        }else{
-            res.render('login', {
                     layout: 'layouts/main-layout',
                     title: 'Franda Store',
                     message: 'Email salah! Coba lagi!',
                     messageClass: 'alert-danger'
-            })
-        }
-    })
+                })
+            }
+        })
 })
 
 app.get('/register', (req, res) => {
@@ -93,7 +96,7 @@ app.get('/register', (req, res) => {
 })
 
 app.post('/register', (req, res) => {
-    let user = new User ({
+    let user = new User({
         name: req.body.name,
         phone: req.body.phone,
         email: req.body.email,
@@ -102,19 +105,19 @@ app.post('/register', (req, res) => {
     })
 
     user.save()
-    .then(user => {
-        res.render('login', {
-            layout: 'layouts/main-layout',
-            title: 'Franda Store',
-            message: 'Pendaftaran berhasil! Silakan login!',
-            messageClass: 'alert-success'
+        .then(user => {
+            res.render('login', {
+                layout: 'layouts/main-layout',
+                title: 'Franda Store',
+                message: 'Pendaftaran berhasil! Silakan login!',
+                messageClass: 'alert-success'
+            })
         })
-    })
-    .catch(err => {
-        res.json({
-            status: 'Gagal Daftar'
+        .catch(err => {
+            res.json({
+                status: 'Gagal Daftar'
+            })
         })
-    })
 })
 
 app.get('/ff-menu', (req, res) => {
@@ -172,7 +175,7 @@ app.use((req, res, next) => {
     req.user = authTokens[token]
     if (req.user) {
         next()
-    }else{
+    } else {
         res.render('login', {
             layout: 'layouts/main-layout',
             title: 'Franda Store',
@@ -210,150 +213,169 @@ app.get('/profile', (req, res) => {
     const email = req.user.email
 
     const getUser = User.findOne({ email: email })
-    .then(getUser => {
-        res.render('profile', {
-            layout: 'layouts/reseller-layout',
-            title: 'Franda Store',
-            user: getUser
+        .then(getUser => {
+            res.render('profile', {
+                layout: 'layouts/reseller-layout',
+                title: 'Franda Store',
+                user: getUser
+            })
         })
-    })
 })
 
 app.post('/res-transaction', (req, res) => {
-    transStatus[token] = true
-    console.log(transStatus)
+    const ms = date.getMilliseconds()
+    const s = date.getSeconds()
+    const m = date.getMinutes()
+    const h = date.getHours()
+    const d = date.getDate()
+    const mn = date.getMonth()
+    const y = date.getFullYear()
+    const key = Math.random()
+
+    transDate[token] = ((key * (s * 1) + (ms * 1)) + '-' + ((h * 1) + '-' + (m * 1)) + '-' + d + mn + y)
 
     const id = req.body.id
     const dm = req.body.gridRadios
     let rp
 
-     if(dm == 20){
+    if (dm == 20) {
         rp = 3800
-    }if(dm == 50){
+    } if (dm == 50) {
         rp = 8100
-    }if(dm == 70){
+    } if (dm == 70) {
         rp = 9900
-    }if(dm == 100){
+    } if (dm == 100) {
         rp = 15200
-    }if(dm == 140){
+    } if (dm == 140) {
         rp = 19900
-    }if(dm == 210){
+    } if (dm == 210) {
         rp = 30600
-    }if(dm == 355){
+    } if (dm == 355) {
         rp = 49900
-    }if(dm == 720){
+    } if (dm == 720) {
         rp = 97900
-    }if(dm == 1440){
+    } if (dm == 1440) {
         rp = 194900
-    }if(dm == 2000){
+    } if (dm == 2000) {
         rp = 284900
-    }if(dm == 'mingguan'){
+    } if (dm == 'mingguan') {
         rp = 29900
-    }if(dm == 'bulanan'){
+    } if (dm == 'bulanan') {
         rp = 117900
     }
 
-    const trans = {
+    trans[transDate[token]] = {
         id,
         dm,
-        rp
+        rp,
+        date: transDate[token]
     }
+
+    transStatus[token] = true
 
     res.render('res-transaction', {
         layout: 'layouts/reseller-layout',
         title: 'Franda Store',
         user: req.user,
-        trans
+        trans:     trans[transDate[token]]
     })
 })
 
 app.post('/nota', (req, res) => {
-    if (transStatus[token]) {
+    if (trans[transDate[token]].date == req.body.date && transStatus) {
+
+        const trans = {
+            id: req.body.id,
+            dm: req.body.dm,
+            rp: req.body.rp,
+            date: req.body.date
+        }
+
         const email = req.user.email
         const fPay = req.body.rp
 
         const getUser = User.findOne({ email: email })
-        .then(getUser => {
-            if(getUser){
-                if(getUser.fPay < fPay){
-
-                    res.render('nota', {
-                        layout: 'layouts/reseller-layout',
-                        title: 'Franda Store',
-                        message: 'Transaksi Gagal! Saldo tidak cukup, silakan isi saldo!',
-                        messageClass: 'alert-danger',
-                        user: getUser,
-                        trans
-                    })
-
-                }else{
-                    transStatus[token] = false
-                    newfPay[token] = getUser.fPay - fPay * 1
-                
-                    User.updateOne(
-                        { email },
-                        {
-                            $set: {
-                                fPay: newfPay[token]
-                            }
-                        }
-                    ).then((result) => {
-
-                        const trans = {
-                            id: req.body.id,
-                            dm: req.body.dm,
-                            rp: req.body.rp
-                        }
-
-                        const order = `Reseller          ${getUser.name}
-                        email: ${getUser.email}
-                        Saldo: ${getUser.fPay}
-                        -------------------------
-                        ${trans.dm} DM
-                        Rp ${trans.rp}
-
-                        ID: ${trans.id}
-
-                        `
-                        const fradoId = '895958227'
-                        bot.sendMessage(fradoId, order)
-
-                        const dindaId = '1805691857'
-                        bot.sendMessage(dindaId, order)
+            .then(getUser => {
+                if (getUser) {
+                    if (getUser.fPay < fPay) {
 
                         res.render('nota', {
                             layout: 'layouts/reseller-layout',
                             title: 'Franda Store',
-                            message: 'Transaksi Berhasil!',
-                            messageClass: 'alert-success',
+                            message: 'Transaksi Gagal! Saldo tidak cukup, silakan isi saldo!',
+                            messageClass: 'alert-danger',
                             user: getUser,
                             trans
                         })
-                    })
-                }
 
-            }else{
-                const trans = {
-                    id: req.body.id,
-                    dm: req.body.dm,
-                    rp: req.body.rp
-                }
-                res.render('nota', {
+                    } else {
+                        newfPay[trans] = getUser.fPay - fPay * 1
+
+                        User.updateOne(
+                            { email },
+                            {
+                                $set: {
+                                    fPay: newfPay[trans]
+                                }
+                            }
+                        ).then((result) => {
+
+                            const order = `Reseller          ${getUser.name}
+                            ${getUser.email}
+                            ${getUser.fPay}
+                            -------------------------
+                            ${trans.date}
+                            ${trans.dm} DM
+                            Rp ${trans.rp}
+
+                            ${trans.id}
+
+                            `
+                            const fradoId = '895958227'
+                            bot.sendMessage(fradoId, order)
+
+                            const dindaId = '1805691857'
+                            bot.sendMessage(dindaId, order)
+
+                            transStatus[token] = false
+
+                            res.render('nota', {
+                                layout: 'layouts/reseller-layout',
+                                title: 'Franda Store',
+                                message: 'Transaksi Berhasil!',
+                                messageClass: 'alert-success',
+                                user: getUser,
+                                trans
+                            })
+                        })
+                    }
+
+                } else {
+                    const trans = {
+                        id: req.body.id,
+                        dm: req.body.dm,
+                        rp: req.body.rp,
+                        date: req.body.date
+                    }
+
+                    res.render('nota', {
                         layout: 'layouts/reseller-layout',
                         title: 'Franda Store',
                         message: 'Transaksi Gagal!',
                         messageClass: 'alert-danger',
                         user: getUser,
                         trans
-                })
-            }
-        })
-    }else{
+                    })
+                }
+            })
+    } else {
         const trans = {
             id: req.body.id,
             dm: req.body.dm,
-            rp: req.body.rp
+            rp: req.body.rp,
+            date: req.body.date
         }
+
         res.render('nota', {
             layout: 'layouts/reseller-layout',
             title: 'Franda Store',
@@ -379,15 +401,15 @@ app.get('/logout', (req, res) => {
         if (!cookie.hasOwnProperty(prop)) {
             continue
         }
-        res.cookie(prop, '', {expires: new Date(0)})
+        res.cookie(prop, '', { expires: new Date(0) })
     }
     res.redirect('/')
 })
 
 app.use((req, res, next) => {
-    if(req.user.email == 'frandatech@gmail.com' && req.user._id == '60ec0639d271804953db5efe'){
+    if (req.user.email == 'frandatech@gmail.com' && req.user._id == '60ec0639d271804953db5efe') {
         next()
-    }else{
+    } else {
         res.redirect('/logout')
     }
 })
@@ -407,37 +429,37 @@ app.post('/cuma-Dinda-Cantik-yangbisamasuk', (req, res) => {
     const fPay = req.body.fPay
 
     const getUser = User.findOne({ email: email })
-    .then(getUser => {
-        if(getUser){
-            let newfPay = getUser.fPay + fPay * 1
-            
-            User.updateOne(
-                { email },
-                {
-                    $set: {
-                        fPay: newfPay
-                    }
-                }
-            ).then((result) => {
-                res.render('cuma-Dinda-Cantik-yangbisamasuk', {
-                    layout: 'layouts/reseller-layout',
-                    title: 'Franda Store',
-                    user: req.user,
-                    message: `Berhasil tambah saldo. ${getUser.fPay} + ${fPay} = ${newfPay}`,
-                    messageClass: 'alert-success'
-                })
-            })
+        .then(getUser => {
+            if (getUser) {
+                let newfPay = getUser.fPay + fPay * 1
 
-        }else{
-            res.render('cuma-Dinda-Cantik-yangbisamasuk', {
+                User.updateOne(
+                    { email },
+                    {
+                        $set: {
+                            fPay: newfPay
+                        }
+                    }
+                ).then((result) => {
+                    res.render('cuma-Dinda-Cantik-yangbisamasuk', {
+                        layout: 'layouts/reseller-layout',
+                        title: 'Franda Store',
+                        user: req.user,
+                        message: `Berhasil tambah saldo. ${getUser.fPay} + ${fPay} = ${newfPay}`,
+                        messageClass: 'alert-success'
+                    })
+                })
+
+            } else {
+                res.render('cuma-Dinda-Cantik-yangbisamasuk', {
                     layout: 'layouts/reseller-layout',
                     title: 'Franda Store',
                     user: req.user,
                     message: 'Email e salah sayangg :3',
                     messageClass: 'alert-danger'
-            })
-        }
-    })
+                })
+            }
+        })
 })
 
 app.listen(port)
