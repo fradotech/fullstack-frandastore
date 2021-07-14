@@ -17,6 +17,8 @@ const date = new Date()
 const bot = new TelegramBot(tokenTele, { polling: true });
 
 let disc
+if(disc == null) disc = true
+
 let newfPay = {}
 let trans = {}
 let transDate = {}
