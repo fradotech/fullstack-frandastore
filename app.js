@@ -320,7 +320,7 @@ app.post('/nota', (req, res) => {
                             }
                         ).then((result) => {
 
-                            const order = `Reseller             ${getUser.name}
+                            const order = `Reseller              ${getUser.name}
                             ${getUser.email}
                             ${getUser.fPay}
                             -------------------------
