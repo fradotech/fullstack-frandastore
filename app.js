@@ -170,9 +170,9 @@ app.post('/transaction', (req, res) => {
 
 //Reseller Area
 
-app.use((req, res, next) => {
-    const token = req.cookies['token']
-    req.user = authTokens[token]
+app.use( async (req, res, next) => {
+    const token = await req.cookies['token']
+    req.user = await authTokens[token]
     if (req.user) {
         next()
     } else {
@@ -209,10 +209,10 @@ app.get('/reseller/ml-menu', (req, res) => {
     })
 })
 
-app.get('/profile', (req, res) => {
+app.get('/profile', async (req, res) => {
     const email = req.user.email
 
-    const getUser = User.findOne({ email: email })
+    const getUser = await User.findOne({ email: email })
         .then(getUser => {
             res.render('profile', {
                 layout: 'layouts/reseller-layout',
@@ -277,11 +277,11 @@ app.post('/res-transaction', (req, res) => {
         layout: 'layouts/reseller-layout',
         title: 'Franda Store',
         user: req.user,
-        trans:     trans[transDate[token]]
+        trans: trans[transDate[token]]
     })
 })
 
-app.post('/nota', (req, res) => {
+app.post('/nota', async (req, res) => {
     if (trans[transDate[token]].date == req.body.date && transStatus[token]) {
 
         const trans = {
@@ -294,7 +294,7 @@ app.post('/nota', (req, res) => {
         const email = req.user.email
         const fPay = req.body.rp
 
-        const getUser = User.findOne({ email: email })
+        const getUser = await User.findOne({ email: email })
             .then(getUser => {
                 if (getUser) {
                     if (getUser.fPay < fPay) {
@@ -424,14 +424,15 @@ app.get('/cuma-Dinda-Cantik-yangbisamasuk', (req, res) => {
     })
 })
 
-app.post('/cuma-Dinda-Cantik-yangbisamasuk', (req, res) => {
+app.post('/cuma-Dinda-Cantik-yangbisamasuk', async (req, res) => {
     const email = req.body.email
     const fPay = req.body.fPay
+    const minfPay = req.body.minfPay
 
-    const getUser = User.findOne({ email: email })
+    const getUser = await User.findOne({ email: email })
         .then(getUser => {
             if (getUser) {
-                let newfPay = getUser.fPay + fPay * 1
+                let newfPay = (getUser.fPay + fPay * 1) - (minfPay * 1)
 
                 User.updateOne(
                     { email },
@@ -445,7 +446,7 @@ app.post('/cuma-Dinda-Cantik-yangbisamasuk', (req, res) => {
                         layout: 'layouts/reseller-layout',
                         title: 'Franda Store',
                         user: req.user,
-                        message: `Berhasil tambah saldo. ${getUser.fPay} + ${fPay} = ${newfPay}`,
+                        message: `Berhasil tambah saldo. ${getUser.fPay} + ${fPay} - ${minfPay} = ${newfPay}`,
                         messageClass: 'alert-success'
                     })
                 })
