@@ -16,9 +16,7 @@ const date = new Date()
 
 const bot = new TelegramBot(tokenTele, { polling: true });
 
-let disc
-if(disc == null) disc = true
-
+var disc
 let newfPay = {}
 let trans = {}
 let transDate = {}
@@ -151,7 +149,7 @@ app.get('/reseller-preview/ff-menu', (req, res) => {
 })
 
 app.get('/reseller-preview/ml-menu', (req, res) => {
-    if(disc == true){
+    if(disc == 'yes'){
         res.render('reseller-preview-ml-menu-disc', {
             layout: 'layouts/main-layout',
             title: 'Franda Store',
@@ -211,7 +209,7 @@ app.get('/reseller-ff-menu', (req, res) => {
 })
 
 app.get('/reseller-ml-menu', (req, res) => {
-    if(disc == true){
+    if(disc == 'yes'){
         res.render('reseller-ml-menu-disc', {
             layout: 'layouts/reseller-layout',
             title: 'Franda Store',
@@ -520,10 +518,9 @@ app.post('/cuma-Dinda-Cantik-yangbisamasuk', async (req, res) => {
     const fPay = req.body.fPay
     const minfPay = req.body.minfPay
     disc = req.body.disc
-    console.log(disc)
-    console.log(req.body.disc)
+    console.log('Diskon: ', disc)
 
-    const getUser = await User.findOne({ email: email })
+    const getUser = await User.findOne({ email })
         .then(getUser => {
             if (getUser) {
                 let newfPay = (getUser.fPay + fPay * 1) - (minfPay * 1)
