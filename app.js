@@ -380,81 +380,97 @@ app.post('/nota', async (req, res) => {
         const fPay = await req.body.rp
 
         const getUser = await User.findOne({ email: email })
-            .then(getUser => {
-                if (getUser) {
-                    if (getUser.fPay < fPay) {
-
-                        res.render('nota', {
-                            layout: 'layouts/reseller-layout',
-                            title: 'Franda Store',
-                            message: 'Transaksi Gagal! Saldo tidak cukup, silakan isi saldo!',
-                            messageClass: 'alert-danger',
-                            user: getUser,
-                            trans
-                        })
-
-                    } else {
-                        newfPay[trans] = getUser.fPay - fPay * 1
-
-                        User.updateOne(
-                            { email },
-                            {
-                                $set: {
-                                    fPay: newfPay[trans]
-                                }
-                            }
-                        ).then((result) => {
-
-                            const order = `Reseller              ${getUser.name}
-                            ${getUser.email}
-                            ${getUser.fPay}
-                            ----------------------------------------------------
-                            ${trans.game}
-                            ${trans.date}
-                            ${trans.dm} DM
-                            Rp ${trans.rp}
-
-                            ${trans.id}
-
-                            `
-                            const fradoId = '895958227'
-                            bot.sendMessage(fradoId, order)
-
-                            const dindaId = '1805691857'
-                            bot.sendMessage(dindaId, order)
-
-                            transStatus[token] = false
-
-                            res.render('nota', {
-                                layout: 'layouts/reseller-layout',
-                                title: 'Franda Store',
-                                message: 'Transaksi Berhasil!',
-                                messageClass: 'alert-success',
-                                user: getUser,
-                                trans
-                            })
-                        })
-                    }
-
-                } else {
-                    const trans = {
-                        game: req.body.game,
-                        id: req.body.id,
-                        dm: req.body.dm,
-                        rp: req.body.rp,
-                        date: req.body.date
-                    }
+        .then (async getUser => {
+            if (getUser) {
+                if (getUser.fPay < fPay) {
 
                     res.render('nota', {
                         layout: 'layouts/reseller-layout',
                         title: 'Franda Store',
-                        message: 'Transaksi Gagal!',
+                        message: 'Transaksi Gagal! Saldo tidak cukup, silakan isi saldo!',
                         messageClass: 'alert-danger',
                         user: getUser,
                         trans
                     })
+
+                } else {
+                    newfPay[trans] = getUser.fPay - fPay * 1
+
+                    const franda = await User.findOne({ email: 'frandatech@gmail.com' })
+                    .then(franda => {
+
+                        const frandaFPay = franda.fPay + fPay * 1
+
+                        User.updateOne(
+                            { email: 'frandatech@gmail.com' },
+                            {
+                                $set: {
+                                    fPay: frandaFPay
+                                }
+                            }
+                        ).then((result) => {
+                            User.updateOne(
+                                { email },
+                                {
+                                    $set: {
+                                        fPay: newfPay[trans]
+                                    }
+                                }
+                            ).then((result) => {
+        
+                                const order = `Reseller              ${getUser.name}
+                                ${getUser.email}
+                                ${getUser.fPay}
+                                ----------------------------------------------------
+                                ${frandaFPay}
+                                ----------------------------------------------------
+                                ${trans.game}
+                                ${trans.date}
+                                ${trans.dm} DM
+                                Rp ${trans.rp}
+        
+                                ${trans.id}
+        
+                                `
+                                const fradoId = '895958227'
+                                bot.sendMessage(fradoId, order)
+        
+                                const dindaId = '1805691857'
+                                bot.sendMessage(dindaId, order)
+        
+                                transStatus[token] = false
+        
+                                res.render('nota', {
+                                    layout: 'layouts/reseller-layout',
+                                    title: 'Franda Store',
+                                    message: 'Transaksi Berhasil!',
+                                    messageClass: 'alert-success',
+                                    user: getUser,
+                                    trans
+                                })
+                            })
+                        })
+                    })
                 }
-            })
+            } else {
+                const trans = {
+                    game: req.body.game,
+                    id: req.body.id,
+                    dm: req.body.dm,
+                    rp: req.body.rp,
+                    date: req.body.date
+                }
+
+                res.render('nota', {
+                    layout: 'layouts/reseller-layout',
+                    title: 'Franda Store',
+                    message: 'Transaksi Gagal!',
+                    messageClass: 'alert-danger',
+                    user: getUser,
+                    trans
+                })
+            }
+        })
     } else {
         const trans = {
             game: req.body.game,
