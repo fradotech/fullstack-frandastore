@@ -418,18 +418,20 @@ app.post('/nota', async (req, res) => {
                                 }
                             ).then((result) => {
         
-                                const order = `Reseller              ${getUser.name}
-                                ${getUser.email}
-                                ${getUser.fPay}
-                                ----------------------------------------------------
-                                ${frandaFPay}
-                                ----------------------------------------------------
-                                ${trans.game}
-                                ${trans.date}
-                                ${trans.dm} DM
-                                Rp ${trans.rp}
-        
-                                ${trans.id}
+                                const order = 
+                                `
+${getUser.name}
+${getUser.email}
+${getUser.fPay}
+----------------------------------------------------
+${frandaFPay}
+----------------------------------------------------
+${trans.game}
+${trans.date}
+${trans.dm} DM
+Rp ${trans.rp}
+
+${trans.id}
         
                                 `
                                 const fradoId = '895958227'
