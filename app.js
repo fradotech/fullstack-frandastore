@@ -300,13 +300,13 @@ app.post('/res-transaction', async (req, res) => {
         } if (dm == 568) {
             return rp = 137800
         } if (dm == 708) {
-            return rp = 194800
+            return rp = 174800
         } if (dm == 875) {
-            return rp = 229800
+            return rp = 209800
         } if (dm == 966) {
-            return rp = 259800
+            return rp = 229800
         } if (dm == 1446) {
-            return rp = 349600
+            return rp = 339600
         } if (dm == 'starlight') {
             return rp = 135900
         }
@@ -329,17 +329,17 @@ app.post('/res-transaction', async (req, res) => {
         } if (dm == 366) {
             return rp = 89800
         } if (dm == 568) {
-            return rp = 134700
+            return rp = 132700
         } if (dm == 708) {
-            return rp = 178800
+            return rp = 158800
         } if (dm == 875) {
-            return rp = 211900
+            return rp = 198900
         } if (dm == 966) {
-            return rp = 241400
+            return rp = 215400
         } if (dm == 1446) {
-            return rp = 327600
+            return rp = 317600
         } if (dm == 'starlight') {
-            return rp = 129900
+            return rp = 124800
         }
     }
 
