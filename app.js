@@ -128,10 +128,17 @@ app.get('/ff-menu', (req, res) => {
 })
 
 app.get('/ml-menu', (req, res) => {
-    res.render('ml-menu', {
-        layout: 'layouts/main-layout',
-        title: 'Franda Store',
-    })
+    if(disc == 'yes'){
+        res.render('ml-menu-disc', {
+            layout: 'layouts/main-layout',
+            title: 'Franda Store',
+        })
+    }else{
+        res.render('ml-menu', {
+            layout: 'layouts/main-layout',
+            title: 'Franda Store',
+        })
+    }
 })
 
 app.get('/reseller-preview', (req, res) => {
