@@ -536,43 +536,27 @@ app.post('/cuma-Dinda-Cantik-yangbisamasuk', async (req, res) => {
     const fPay = req.body.fPay
     const minfPay = req.body.minfPay
     disc = req.body.disc
-    console.log('Diskon: ', disc)
 
     const getUser = await User.findOne({ email })
         .then( async getUser => {
             if (getUser) {
                 let newfPay = (getUser.fPay + fPay * 1) - (minfPay * 1)
 
-                const franda = await User.findOne({ email: 'frandatech@gmail.com' })
-                .then(franda => {
-
-                    const frandaFPay = (franda.fPay + fPay * 1) - (minfPay * 1)
-
-                    User.updateOne(
-                        { email: 'frandatech@gmail.com' },
-                        {
-                            $set: {
-                                fPay: frandaFPay
-                            }
+                User.updateOne(
+                    { email },
+                    {
+                        $set: {
+                            fPay: newfPay
                         }
-                    ).then((result) => {
-                        User.updateOne(
-                            { email },
-                            {
-                                $set: {
-                                    fPay: newfPay
-                                }
-                            }
-                        ).then((result) => {
-                            res.render('cuma-Dinda-Cantik-yangbisamasuk', {
-                                layout: 'layouts/reseller-layout',
-                                title: 'Franda Store',
-                                user: req.user,
-                                message: `Berhasil tambah saldo. ${getUser.fPay} + ${fPay} - ${minfPay} = ${newfPay}`,
-                                messageClass: 'alert-success',
-                                disc
-                            })
-                        })
+                    }
+                ).then((result) => {
+                    res.render('cuma-Dinda-Cantik-yangbisamasuk', {
+                        layout: 'layouts/reseller-layout',
+                        title: 'Franda Store',
+                        user: req.user,
+                        message: `Berhasil tambah saldo. ${getUser.fPay} + ${fPay} - ${minfPay} = ${newfPay}`,
+                        messageClass: 'alert-success',
+                        disc
                     })
                 })
 
