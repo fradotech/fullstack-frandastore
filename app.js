@@ -346,7 +346,7 @@ app.post('/res-transaction', async (req, res) => {
         } if (dm == 1446) {
             return rp = 317600
         } if (dm == 'starlight') {
-            return rp = 124800
+            return rp = 112800
         }
     }
 
