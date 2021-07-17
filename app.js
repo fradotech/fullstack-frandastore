@@ -270,13 +270,13 @@ app.post('/res-transaction', async (req, res) => {
         } if (dm == 100) {
             return rp = 14900
         } if (dm == 140) {
-            return rp = 19500
+            return rp = 17500
         } if (dm == 210) {
             return rp = 29900
         } if (dm == 355) {
             return rp = 48900
         } if (dm == 720) {
-            return rp = 96900
+            return rp = 87900
         } if (dm == 1440) {
             return rp = 194900
         } if (dm == 2000) {
