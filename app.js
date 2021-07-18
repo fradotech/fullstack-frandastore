@@ -129,12 +129,12 @@ app.get('/ff-menu', (req, res) => {
 
 app.get('/ml-menu', (req, res) => {
     if(disc == 'yes'){
-        res.render('ml-menu-disc', {
+        res.render('ml-menu', {
             layout: 'layouts/main-layout',
             title: 'Franda Store',
         })
     }else{
-        res.render('ml-menu', {
+        res.render('ml-menu-disc', {
             layout: 'layouts/main-layout',
             title: 'Franda Store',
         })
@@ -157,12 +157,12 @@ app.get('/reseller-preview/ff-menu', (req, res) => {
 
 app.get('/reseller-preview/ml-menu', (req, res) => {
     if(disc == 'yes'){
-        res.render('reseller-preview-ml-menu-disc', {
+        res.render('reseller-preview-ml-menu', {
             layout: 'layouts/main-layout',
             title: 'Franda Store',
         })
     }else{
-        res.render('reseller-preview-ml-menu', {
+        res.render('reseller-preview-ml-menu-disc', {
             layout: 'layouts/main-layout',
             title: 'Franda Store',
         })
@@ -217,13 +217,13 @@ app.get('/reseller-ff-menu', (req, res) => {
 
 app.get('/reseller-ml-menu', (req, res) => {
     if(disc == 'yes'){
-        res.render('reseller-ml-menu-disc', {
+        res.render('reseller-ml-menu', {
             layout: 'layouts/reseller-layout',
             title: 'Franda Store',
             user: req.user
         })
     }else{
-        res.render('reseller-ml-menu', {
+        res.render('reseller-ml-menu-disc', {
             layout: 'layouts/reseller-layout',
             title: 'Franda Store',
             user: req.user
@@ -270,13 +270,13 @@ app.post('/res-transaction', async (req, res) => {
         } if (dm == 100) {
             return rp = 14900
         } if (dm == 140) {
-            return rp = 17500
+            return rp = 19500
         } if (dm == 210) {
             return rp = 29900
         } if (dm == 355) {
             return rp = 48900
         } if (dm == 720) {
-            return rp = 87900
+            return rp = 96900
         } if (dm == 1440) {
             return rp = 194900
         } if (dm == 2000) {
@@ -346,7 +346,7 @@ app.post('/res-transaction', async (req, res) => {
         } if (dm == 1446) {
             return rp = 317600
         } if (dm == 'starlight') {
-            return rp = 112800
+            return rp = 124800
         }
     }
 
