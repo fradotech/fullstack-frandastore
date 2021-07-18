@@ -128,7 +128,7 @@ app.get('/ff-menu', (req, res) => {
 })
 
 app.get('/ml-menu', (req, res) => {
-    if(disc == 'yes'){
+    if(disc == 'no'){
         res.render('ml-menu', {
             layout: 'layouts/main-layout',
             title: 'Franda Store',
@@ -156,7 +156,7 @@ app.get('/reseller-preview/ff-menu', (req, res) => {
 })
 
 app.get('/reseller-preview/ml-menu', (req, res) => {
-    if(disc == 'yes'){
+    if(disc == 'no'){
         res.render('reseller-preview-ml-menu', {
             layout: 'layouts/main-layout',
             title: 'Franda Store',
@@ -216,7 +216,7 @@ app.get('/reseller-ff-menu', (req, res) => {
 })
 
 app.get('/reseller-ml-menu', (req, res) => {
-    if(disc == 'yes'){
+    if(disc == 'no'){
         res.render('reseller-ml-menu', {
             layout: 'layouts/reseller-layout',
             title: 'Franda Store',
