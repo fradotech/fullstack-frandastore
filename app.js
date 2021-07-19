@@ -11,10 +11,13 @@ const User = require('./model/user')
 
 const app = express()
 const port = process.env.PORT || 3000
-const tokenTele = '1732495901:AAFzAs_v_JGTqef9IS0bAtqe78cOuXu6_KQ'
+const tokenTele1 = '1732495901:AAE_DtXJ5TqLi6Ge27jqyG_bIKiB93R1iYA'
+const tokenTele2 = '1856669880:AAE06H7DiZRC7TplMXUdzvAptZ95RTge47E'
 const date = new Date()
 
-const bot = new TelegramBot(tokenTele, { polling: true });
+const bot1 = new TelegramBot(tokenTele1, { polling: true });
+const bot2 = new TelegramBot(tokenTele2, { polling: true });
+
 
 var disc
 let newfPay = {}
@@ -442,10 +445,13 @@ ${trans.id}
         
                                 `
                                 const fradoId = '895958227'
-                                bot.sendMessage(fradoId, order)
-        
                                 const dindaId = '1805691857'
-                                bot.sendMessage(dindaId, order)
+
+                                bot1.sendMessage(fradoId, order)
+                                bot1.sendMessage(dindaId, order)
+
+                                bot2.sendMessage(fradoId, order)
+                                bot2.sendMessage(dindaId, order)
         
                                 transStatus[token] = false
         
